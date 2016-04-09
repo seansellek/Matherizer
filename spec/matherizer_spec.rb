@@ -15,7 +15,7 @@ describe Matherizer do
   end
 
   describe Matherizer::OperationNode do
-    it "performs operation on both operands" do
+    it "performs operation on both operadnds" do
       node = Matherizer::OperationNode.new(:+, 1, 1)
       expect(node.value).to eq 2 
     end
@@ -25,6 +25,20 @@ describe Matherizer do
       node.right_operand = Matherizer::OperationNode.new(:+, 1, 1)
       node.left_operand = 2
       expect(node.value).to eq 4
+    end
+
+    it "accepts nested operators through blocks" do
+      node =  OperationNode.new(:-) do |n|
+        n.right_operand = -6
+        n.left_operand = OperationNode.new(:*) do |n|
+          n.right_operand = 4
+          n.left_operand = OperationNode.new(:/) do |n|
+            n.left_operand = 2
+            n.right_operand = OperationNode.new(:+, 2, 3.33)
+          end
+        end
+      end
+      expect(node.value).to be_within(0.1).of(7.5)
     end
   end
 end
