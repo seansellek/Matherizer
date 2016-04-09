@@ -43,19 +43,28 @@ describe Matherizer do
   end
 
   describe Tokenizer do
-    it "Splits an expression into tokens" do
-      expression = "(1+1)/2"
-      expect(Tokenizer.call(expression)).to eq(["(", "1", "+", "1", ")", "/", "2"])
+    describe Tokenizer::Splitter do
+      it "Splits an expression into tokens" do
+        expression = "(1+1)/2"
+        expect(Tokenizer::Splitter.call(expression)).to eq(["(", "1", "+", "1", ")", "/", "2"])
+      end
+
+      it "Handles large numbers" do
+        expression = "11 + 112"
+        expect(Tokenizer::Splitter.call(expression)).to eq(["11", "+", "112"])
+      end
+
+      it "Handles exponents" do
+        expression = "1**(1/2)"
+        expect(Tokenizer::Splitter.call(expression)).to eq(["1", "**", "(", "1", "/", "2", ")"])
+      end
     end
 
-    it "Handles large numbers" do
-      expression = "11 + 112"
-      expect(Tokenizer.call(expression)).to eq(["11", "+", "112"])
-    end
-
-    it "Handles exponents" do
-      expression = "1**(1/2)"
-      expect(Tokenizer.call(expression)).to eq(["1", "**", "(", "1", "/", "2", ")"])
+    describe Tokenizer::Converter do
+      it "converts operators to symbols" do
+        token_array = ["(", "1", "+", "1", ")", "/", "2"]
+        expect(Tokenizer::Converter.call(token_array)).to eq(["(", 1.0, :+, 1.0, ")", :/, 2.0])
+      end
     end
   end
 end
