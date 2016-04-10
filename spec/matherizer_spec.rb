@@ -68,7 +68,47 @@ describe Matherizer do
     end
   end
 
+  describe Tokenizer::Structurizer do
+    it "prepares s expression formatted array" do
+      converted_token_array = [1.0, :/, 2.0]
+      expect(Tokenizer::Structurizer.call(converted_token_array)).to eq([:/, 1.0, 2.0])
+    end
+  end
+
+  describe ExpressionParser do
+    def value expression
+      sexp = ExpressionParser.call(expression)
+      expression_tree = ExpressionTreeBuilder.call(sexp)
+      expression_tree.value
+    end
+    it "parses 1" do
+      expression = "1"
+      expect(value(expression)).to eq(1)
+    end
+    it "parses 1 + 1" do
+      expression = '1+1'
+      expect(value(expression)).to eq(2)
+    end
+    it "parses 1 + 2 + 3" do
+      expression = "1+2+3"
+      expect(value(expression)).to eq(6)
+    end
+    it "parses -123" do
+      expression = "-123"
+      expect(value(expression)).to eq(-123)
+    end
+    it "parses 1-1" do
+      expression = "1-1"
+      expect(value(expression)).to eq(0)
+    end 
+  end
+
   describe ExpressionTreeBuilder do
+    it "builds ValueNode for single value" do
+      sexp = 1
+      expression = ValueNode.new(1)
+      expect(ExpressionTreeBuilder.call(sexp).value).to eq(expression.value)
+    end
     it "builds expression tree for simple s expression" do
       sexp = [:+, 1, 1]
       expression = OperationNode.new(:+, ValueNode.new(1), ValueNode.new(1))
