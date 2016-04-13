@@ -5,5 +5,7 @@ require "matherizer/tokenizer"
 require "matherizer/expression_parser"
 
 module Matherizer
-  # Your code goes here...
+  def self.evaluate expression
+    ExpressionParser.new(expression).parse.value
+  end
 end

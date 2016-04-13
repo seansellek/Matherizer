@@ -1,5 +1,3 @@
-require 'strscan'
-
 module Matherizer
   class ExpressionParser
     class MismatchedParenthesisError < StandardError; end
@@ -17,13 +15,13 @@ module Matherizer
     end
 
     def parse
-      @output ||= []
+      @value_stack ||= []
       @operator_stack ||= []
       loop do
         @token = @tokens.next
         case token_type
         when :number
-          @output << ValueNode.new(@token)
+          @value_stack << ValueNode.new(@token)
         when :operator
           handle_operator
         when :left_parenthesis
@@ -34,9 +32,9 @@ module Matherizer
       end
 
       until @operator_stack.empty?
-        @output << build_operator_node(@operator_stack.pop)
+        @value_stack << build_operator_node(@operator_stack.pop)
       end
-      @output.last
+      @value_stack.last
     end
 
     private
@@ -46,18 +44,19 @@ module Matherizer
       return :operator if OPERATORS.keys.include? @token
       return :left_parenthesis if @token.match(/\(/)
       return :right_parenthesis if @token.match(/\)/)
+
     end
 
     def handle_operator
       while lower_precedence?(current_operator, last_operator)
-        @output << build_operator_node(@operator_stack.pop)
+        @value_stack << build_operator_node(@operator_stack.pop)
       end
       @operator_stack << @token
     end
 
     def build_operator_node operator
-      right_operand = @output.pop
-      left_operand = @output.pop
+      right_operand = @value_stack.pop
+      left_operand = @value_stack.pop
       OperationNode.new(operator, left_operand, right_operand)
     end
 
@@ -68,7 +67,7 @@ module Matherizer
 
     def handle_right_parenthesis
       until @operator_stack.last == "("
-        @output << build_operator_node(@operator_stack.pop)
+        @value_stack << build_operator_node(@operator_stack.pop)
         raise MismatchedParenthesisError if @operator_stack.empty?
       end
       @operator_stack.pop
