@@ -23,7 +23,7 @@ module Matherizer
         @token = @tokens.next
         case token_type
         when :number
-          @output << @token
+          @output << ValueNode.new(@token)
         when :operator
           handle_operator
         when :left_parenthesis
@@ -58,10 +58,7 @@ module Matherizer
     def build_operator_node operator
       right_operand = @output.pop
       left_operand = @output.pop
-      OperationNode.new(operator) do |n|
-        n.left_operand = left_operand.is_a?(OperationNode) ? left_operand : ValueNode.new(left_operand)
-        n.right_operand = right_operand.is_a?(OperationNode) ? right_operand : ValueNode.new(right_operand)
-      end
+      OperationNode.new(operator, left_operand, right_operand)
     end
 
     def lower_precedence? o1, o2
