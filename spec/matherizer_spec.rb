@@ -26,6 +26,10 @@ describe Matherizer do
       expect(Matherizer.evaluate('12* 123')).to eq(1476)
     end
 
+    it "solves 12* 123/-(-5 + 2)" do
+      expect(Matherizer.evaluate('12* 123/-(-5 + 2)')).to eq(492)
+    end
+
     it "solves 2 /2+3 * 4.75- -6" do
       expect(Matherizer.evaluate('2 /2+3 * 4.75- -6')).to be_within(0.01).of(21.25)
     end

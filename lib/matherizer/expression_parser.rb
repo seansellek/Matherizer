@@ -3,6 +3,7 @@ module Matherizer
     class MismatchedParenthesisError < StandardError; end
     Operator = Struct.new(:symbol, :precedence, :associativity)
     OPERATORS = {
+      :_  => Operator.new(:*, 4, :right),
       :+  => Operator.new(:+, 2, :left),
       :-  => Operator.new(:-, 2, :left),
       :/  => Operator.new(:/, 3, :left),
@@ -59,6 +60,7 @@ module Matherizer
     def build_operator_node operator
       right_operand = @value_stack.pop
       left_operand = @value_stack.pop
+      operator = OPERATORS[operator].symbol
       OperationNode.new(operator, left_operand, right_operand)
     end
 
@@ -86,7 +88,7 @@ module Matherizer
     def correct_unary_minus
       if current_operator.symbol == :- && [nil, "(", *OPERATORS.keys].include?(@previous_token)
         @value_stack << ValueNode.new(-1.0)
-        @token = :*
+        @token = :_
       end
     end
   end
