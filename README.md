@@ -1,36 +1,15 @@
 # Matherizer
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/matherizer`. To experiment with that code, run `bin/console` for an interactive prompt.
+A simple gem to parse and solve infix notation mathematical expressions. Those are the kind you're used to seeing in school.
 
-TODO: Delete this and the text above, and describe your gem
+The gem uses a variation of the [shunting-yard algorithm](https://en.wikipedia.org/wiki/Shunting-yard_algorithm), with the exception that it builds a operation tree in preparation for evaluation rather than Reverse Polish Notation.
 
-## Installation
+Matherizer also supports unary minus (think distributed negative signs as well as negative numbers), which is not supported by your standard implemetation of the Shunting-yard algorithm.
 
-Add this line to your application's Gemfile:
+To use, simply call `Matherizer.evaluate(expression)`.
 
-```ruby
-gem 'matherizer'
-```
 
-And then execute:
+# Todo
 
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install matherizer
-
-## Usage
-
-TODO: Write usage instructions here
-
-## Development
-
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
-
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
-
-## Contributing
-
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/matherizer.
+* Matherizer already throws errors for certain formatting issues like mismatched parenthesis or illegal tokens, but it could support the user more in identifying other issues with the input string.
 
