@@ -76,31 +76,33 @@ describe Matherizer do
   end
 
   describe ExpressionParser do
-    def value expression
-      sexp = ExpressionParser.call(expression)
-      expression_tree = ExpressionTreeBuilder.call(sexp)
-      expression_tree.value
+    context "#parse" do
+      before do
+        expression = '3 + 4 * 2 / ( 1 - 5 )' 
+        @expression_tree = OperationNode.new(:+) do |n|
+          n.left_operand = ValueNode.new(3)
+          n.right_operand = OperationNode.new(:*) do |n|
+            n.left_operand = ValueNode.new(4)
+            n.right_operand = OperationNode.new(:/) do |n|
+              n.left_operand = ValueNode.new(2)
+              n.right_operand = OperationNode.new(:-) do |n|
+                n.left_operand = ValueNode.new(1)
+                n.right_operand = ValueNode.new(5)
+              end
+            end
+          end
+        end
+        @parsed_expression = ExpressionParser.new(expression).parse
+      end
+
+      it "Produces an expression tree" do
+        expect(@parsed_expression.respond_to?(:value)).to be_truthy
+      end
+
+      it "Correctly parses infix notation" do
+        expect(@parsed_expression.value).to eq(@expression_tree.value)
+      end
     end
-    it "parses 1" do
-      expression = "1"
-      expect(value(expression)).to eq(1)
-    end
-    it "parses 1 + 1" do
-      expression = '1+1'
-      expect(value(expression)).to eq(2)
-    end
-    it "parses 1 + 2 + 3" do
-      expression = "1+2+3"
-      expect(value(expression)).to eq(6)
-    end
-    it "parses -123" do
-      expression = "-123"
-      expect(value(expression)).to eq(-123)
-    end
-    it "parses 1-1" do
-      expression = "1-1"
-      expect(value(expression)).to eq(0)
-    end 
   end
 
   describe ExpressionTreeBuilder do
