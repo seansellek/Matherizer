@@ -18,6 +18,7 @@ module Matherizer
       @value_stack ||= []
       @operator_stack ||= []
       loop do
+        @previous_token = @token
         @token = @tokens.next
         case token_type
         when :number
@@ -48,6 +49,7 @@ module Matherizer
     end
 
     def handle_operator
+      correct_unary_minus
       while lower_precedence?(current_operator, last_operator)
         @value_stack << build_operator_node(@operator_stack.pop)
       end
@@ -79,6 +81,13 @@ module Matherizer
 
     def last_operator
       OPERATORS[@operator_stack.last]
+    end
+
+    def correct_unary_minus
+      if current_operator.symbol == :- && [nil, "(", *OPERATORS.keys].include?(@previous_token)
+        @value_stack << ValueNode.new(-1.0)
+        @token = :*
+      end
     end
   end
 end

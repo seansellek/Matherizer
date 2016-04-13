@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Matherizer do
-  context "::evaluate" do
+  describe "::evaluate" do
     it "solves 1+1" do
       expect(Matherizer.evaluate('1+1')).to eq(2)
     end
@@ -22,12 +22,14 @@ describe Matherizer do
       expect(Matherizer.evaluate('-123')).to eq(-123)
     end
 
+    it "solves 2 /2+3 * 4.75- -6" do
+      expect(Matherizer.evaluate('2 /2+3 * 4.75- -6')).to be_within(0.01).of(21.25)
+    end
 
-
+    it "solves 2 / (2 + 3) * 4.33 - -6" do
+      expect(Matherizer.evaluate('2 / (2 + 3) * 4.33 - -6')).to be_within(0.001).of(7.732)
+    end
     
-  end
-  it 'has a version number' do
-    expect(Matherizer::VERSION).not_to be nil
   end
 
   describe ValueNode do
@@ -82,16 +84,6 @@ describe Matherizer do
       it "Handles exponents" do
         expression = "1**(1/2)"
         expect(Tokenizer::Splitter.call(expression)).to eq(["1", "**", "(", "1", "/", "2", ")"])
-      end
-
-      it "Handles negative numbers" do
-        expression = "-123"
-        expect(Tokenizer::Splitter.call(expression)).to eq(["-123"])
-      end
-
-      it "Handles distributed negatives" do
-        expression = "6 + -(4 - 3)"
-        expect(Tokenizer::Splitter.call(expression)).to eq(["6", "+", "-1", "*", "(", "4", "-", "3", ")"])
       end
     end
 
